@@ -14,7 +14,7 @@ export function errorHandler(
   next: NextFunction
 ) {
   logger.error(err, 'Caught final exception');
-  res.status(err.status || 500).json({ error: err.message });
+  res.status(err.status || 500).json({ error: 'Internal server error' });
 }
 
 export function customNext(next: NextFunction, arg?: TNextError) {

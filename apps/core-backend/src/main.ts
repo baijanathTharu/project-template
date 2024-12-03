@@ -17,9 +17,8 @@ app.use(compression());
 
 app.use(helmet());
 
-logger.info(
-  `Environment: ${env.ENVIRONMENT} | Port: ${env.PORT} | Whitelisted origins: ${env.WHITELISTED_ORIGINS}`
-);
+logger.debug(env, 'Environment variables');
+
 app.use(
   cors({
     origin: function (origin, callback) {

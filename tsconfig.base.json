@@ -16,7 +16,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@libs/core-contract/*": ["libs/core-contract/src/*"]
+      "@libs/core-contract/*": ["libs/core-contract/src/*"],
+      "@libs/kysely-db/*": ["libs/kysely-db/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

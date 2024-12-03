@@ -14,7 +14,7 @@ const SuccessSchema = z.object({
 });
 
 export const TodoSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   title: z.string(),
   completed: z.boolean(),
 });
@@ -49,7 +49,7 @@ export const todoContract = c.router({
   createTodo: {
     method: 'POST',
     path: '/todos',
-    body: TodoSchema,
+    body: TodoSchema.omit({ id: true }),
     responses: {
       201: SuccessSchema.extend({
         data: TodoSchema,
