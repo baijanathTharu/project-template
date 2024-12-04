@@ -31,6 +31,8 @@ export function useMeQuery() {
   return useQuery<TMeOutput, Error>({
     queryKey: ['me'],
     queryFn: me,
+    retry: false,
+    refetchOnMount: true,
   });
 }
 

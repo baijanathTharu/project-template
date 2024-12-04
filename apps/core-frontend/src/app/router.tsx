@@ -1,8 +1,9 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Outlet } from 'react-router-dom';
 import { HomePage } from '../pages/home';
 import { SignUpPage } from '../pages/signup';
 import { LoginPage } from '../pages/login';
 import { DashboardPage } from '../pages/dashboard';
+import { WithAuth, WithoutAuth } from '../components/auth';
 
 export const router = createBrowserRouter([
   {
@@ -14,16 +15,28 @@ export const router = createBrowserRouter([
     children: [
       {
         path: 'signup',
-        element: <SignUpPage />,
+        element: (
+          <WithoutAuth>
+            <SignUpPage />
+          </WithoutAuth>
+        ),
       },
       {
         path: 'login',
-        element: <LoginPage />,
+        element: (
+          <WithoutAuth>
+            <LoginPage />
+          </WithoutAuth>
+        ),
       },
     ],
   },
   {
     path: '/dashboard',
-    element: <DashboardPage />,
+    element: (
+      <WithAuth>
+        <DashboardPage />
+      </WithAuth>
+    ),
   },
 ]);

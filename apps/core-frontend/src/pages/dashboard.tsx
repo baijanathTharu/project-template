@@ -1,14 +1,12 @@
-import { Card, Button, Spinner } from '@nextui-org/react';
-import { useNavigate } from 'react-router-dom';
+import { Card, Button } from '@nextui-org/react';
 import { useLogoutMutation, useMeQuery } from '../apis/auth/query';
 import { Error } from '../components/error';
 import { toastError, toastSuccess } from '../app/toaster';
+import { Loading } from '../components/loading';
 
 export function DashboardPage() {
   const meQuery = useMeQuery();
   const logoutMutation = useLogoutMutation();
-
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
@@ -17,7 +15,8 @@ export function DashboardPage() {
         {
           onSuccess: () => {
             toastSuccess('Logout successful!');
-            navigate('/auth/login');
+            // perform full page refresh
+            window.location.href = '/auth/login';
           },
         }
       );
@@ -28,11 +27,7 @@ export function DashboardPage() {
   };
 
   if (meQuery.isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <Spinner label="Loading user..." color="primary" labelColor="primary" />
-      </div>
-    );
+    return <Loading label="Loading user..." />;
   }
 
   if (meQuery.isError) {
