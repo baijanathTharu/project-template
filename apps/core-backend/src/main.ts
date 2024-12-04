@@ -31,21 +31,22 @@ app.use(
         callback(new Error('Not allowed by CORS'));
       }
     },
+    credentials: true,
   })
 );
 
-app.use(cookieParser());
-app.use(
-  express.urlencoded({
-    extended: false,
-  })
-);
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(loggerMiddleware);
 
 app.get('/ping', async (req, res) => {
   res.status(200).send(`Hello!`);
+});
+
+app.use((req, res, next) => {
+  logger.debug({ body: req.body }, 'Request body');
+  next();
 });
 
 createAuth(app);
