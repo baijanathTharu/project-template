@@ -12,7 +12,16 @@ export function WithAuth({ children }: { children: ReactNode }) {
   }
 
   if (meQuery.isError) {
-    return <Error message={meQuery.error.message || 'Something went wrong!'} />;
+    return (
+      <Error
+        message={'You are not logged in!'}
+        actionNode={
+          <Link to="/auth/login" className="text-blue-500 underline">
+            Go to login
+          </Link>
+        }
+      />
+    );
   }
 
   return children;
