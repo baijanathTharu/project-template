@@ -6,9 +6,9 @@ import * as swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
 
 import { createAuth } from '@libs/auth/index';
+import { logger, loggerMiddleware } from '@libs/core-contract/utils/logger';
 import { env } from './utils/env';
 import { errorHandler, notFoundHandler } from './utils/error-handler';
-import { logger, loggerMiddleware } from './utils/logger';
 import { generateEndPoints } from './routers/merge';
 import { openApiDocument } from './utils/swagger';
 

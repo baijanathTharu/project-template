@@ -10,6 +10,9 @@ import {
   ISendOtpHandler,
 } from '@baijanstack/express-auth';
 
+import { logger } from '@libs/core-contract/utils/logger';
+import { userRepo } from '@libs/kysely-db/repositories/auth-repo';
+
 export type TUser = {
   name: string;
   email: string;
@@ -20,8 +23,6 @@ export type TUser = {
     generatedAt: number;
   }[];
 };
-
-const users: TUser[] = [];
 
 type TEmailObj = {
   email: string;
@@ -34,7 +35,7 @@ interface TSignUpBodyInput extends TEmailObj {
 
 export class SignUpHandler implements ISignUpHandler {
   constructor() {
-    console.log('signup persistor init...');
+    logger.info('signup persistor init...');
   }
 
   errors: { USER_ALREADY_EXISTS_MESSAGE?: string } = {};
@@ -42,31 +43,37 @@ export class SignUpHandler implements ISignUpHandler {
   doesUserExists: (body: TSignUpBodyInput) => Promise<boolean> = async (
     body
   ) => {
-    const user = users.find((user) => user.email === body.email);
+    const user = await userRepo.findByEmail(body.email);
     return !!user;
   };
 
   saveUser: (body: TSignUpBodyInput, hashedPassword: string) => Promise<void> =
     async (body, hashedPassword) => {
-      users.push({
+      await userRepo.create({
+        id: crypto.randomUUID(),
         name: body.name,
         email: body.email,
         password: hashedPassword,
         is_email_verified: false,
-        otps: [],
       });
     };
 }
 
 export class LoginHandler implements ILoginHandler {
   getUserByEmail: (email: string) => Promise<TUser | null> = async (email) => {
-    const user = await users.find((user) => user.email === email);
+    const user = await userRepo.findByEmail(email);
 
     if (!user) {
       return null;
     }
 
-    return user;
+    return {
+      name: user?.name,
+      email: user?.email,
+      password: user?.password,
+      is_email_verified: user?.is_email_verified,
+      otps: [],
+    };
   };
   errors: { PASSWORD_OR_EMAIL_INCORRECT?: string } = {
     PASSWORD_OR_EMAIL_INCORRECT: 'Password or email incorrect',
@@ -76,7 +83,7 @@ export class LoginHandler implements ILoginHandler {
     name: string;
     email: string;
   } | null> = async (email) => {
-    const user = users.find((user) => user.email === email);
+    const user = await userRepo.findByEmail(email);
 
     if (!user) {
       return null;
@@ -99,14 +106,14 @@ export class RefreshHandler implements IRefreshHandler {
   errors: { INVALID_REFRESH_TOKEN?: string } = {};
 
   refresh: (token: string) => Promise<void> = async () => {
-    console.log('refreshing token...');
+    logger.info('refreshing token...');
   };
 
   getTokenPayload: (email: string) => Promise<{
     name: string;
     email: string;
   } | null> = async (email) => {
-    const user = users.find((user) => user.email === email);
+    const user = await userRepo.findByEmail(email);
 
     if (!user) {
       return null;
@@ -122,15 +129,11 @@ export class RefreshHandler implements IRefreshHandler {
 export class ResetPasswordHandler implements IResetPasswordHandler {
   saveHashedPassword: (email: string, hashedPassword: string) => Promise<void> =
     async (email, hashedPassword) => {
-      const userIdx = users.findIndex((user) => user.email === email);
-      if (userIdx < 0) {
-        throw new Error(`User not found`);
-      }
-
-      users[userIdx].password = hashedPassword;
+      await userRepo.updatePasswordByEmail(email, hashedPassword);
     };
   getOldPasswordHash: (email: string) => Promise<string> = async (email) => {
-    const user = users.find((user) => user.email === email);
+    const user = await userRepo.findByEmail(email);
+
     if (!user) {
       return '';
     }
@@ -142,7 +145,7 @@ export class MeRouteHandler implements IMeRouteHandler {
   getMeByEmail: (
     email: string
   ) => Promise<{ email: string; name: string } | null> = async (email) => {
-    const user = users.find((user) => user.email === email);
+    const user = await userRepo.findByEmail(email);
 
     if (!user) {
       return null;
@@ -160,15 +163,22 @@ export class VerifyEmailHandler implements IVerifyEmailHandler {
     email,
     otp
   ) => {
-    const user = users.find((user) => user.email === email);
+    const user = await userRepo.findByEmail(email);
+
     if (!user) {
       return false;
     }
-    const lastOtp = user.otps[user.otps.length - 1];
 
-    const isOtpMatched = lastOtp?.code === otp;
+    const latestOtp = await userRepo.getLatestOtpByUserId(user.id);
 
-    const isExpired = lastOtp?.generatedAt < Date.now() / 1000 - 60 * 5; // 5 minutes
+    if (!latestOtp) {
+      return false;
+    }
+
+    const isOtpMatched = latestOtp.code === otp;
+
+    const isExpired =
+      latestOtp.created_at.getTime() < Date.now() - 60 * 5 * 1000; // 5 minutes
 
     return isOtpMatched && !isExpired;
   };
@@ -176,7 +186,7 @@ export class VerifyEmailHandler implements IVerifyEmailHandler {
   isEmailAlreadyVerified: (email: string) => Promise<boolean> = async (
     email
   ) => {
-    const user = users.find((user) => user.email === email);
+    const user = await userRepo.findByEmail(email);
 
     return !user?.is_email_verified;
   };
@@ -184,7 +194,7 @@ export class VerifyEmailHandler implements IVerifyEmailHandler {
 
 export class SendOtpHandler implements ISendOtpHandler {
   doesUserExists: (email: string) => Promise<boolean> = async (email) => {
-    const user = users.find((user) => user.email === email);
+    const user = await userRepo.findByEmail(email);
     return !!user;
   };
 
@@ -192,11 +202,12 @@ export class SendOtpHandler implements ISendOtpHandler {
     email: string,
     otp: { code: string; generatedAt: number }
   ) => Promise<void> = async (email, otp) => {
-    const userIdx = users.findIndex((user) => user.email === email);
-    if (userIdx < 0) {
+    const user = await userRepo.findByEmail(email);
+
+    if (!user) {
       throw new Error(`User not found`);
     }
-    users[userIdx].otps.push(otp);
+    await userRepo.createOtp(user.id, otp.code);
   };
 }
 
@@ -205,15 +216,22 @@ export class ForgotPasswordHandler implements IForgotPasswordHandler {
     email,
     otp
   ) => {
-    const user = users.find((user) => user.email === email);
+    const user = await userRepo.findByEmail(email);
+
     if (!user) {
       return false;
     }
-    const lastOtp = user.otps[user.otps.length - 1];
 
-    const isOtpMatched = lastOtp?.code === otp;
+    const latestOtp = await userRepo.getLatestOtpByUserId(user.id);
 
-    const isExpired = lastOtp?.generatedAt < Date.now() / 1000 - 60 * 5; // 5 minutes
+    if (!latestOtp) {
+      return false;
+    }
+
+    const isOtpMatched = latestOtp.code === otp;
+
+    const isExpired =
+      latestOtp.created_at.getTime() < Date.now() - 60 * 5 * 1000; // 5 minutes
 
     return isOtpMatched && !isExpired;
   };
@@ -222,10 +240,6 @@ export class ForgotPasswordHandler implements IForgotPasswordHandler {
     email,
     password
   ) => {
-    const userIdx = users.findIndex((user) => user.email === email);
-    if (userIdx < 0) {
-      throw new Error(`User not found`);
-    }
-    users[userIdx].password = password;
+    await userRepo.updatePasswordByEmail(email, password);
   };
 }

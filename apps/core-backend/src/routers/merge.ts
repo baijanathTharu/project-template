@@ -1,6 +1,7 @@
 import { createExpressEndpoints } from '@ts-rest/express';
 import { todoContract } from '@libs/core-contract/index';
-import { logger } from '../utils/logger';
+import { logger } from '@libs/core-contract/utils/logger';
+
 import { todoRouter } from './todo-router';
 
 const routers = [

@@ -1,5 +1,3 @@
-import { logger } from './logger';
-
 type TPinoLogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
 type TEnvironment = 'prod' | 'dev';
 

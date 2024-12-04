@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { logger } from './logger';
+import { logger } from '@libs/core-contract/utils/logger';
 
 export type TNextError = {
   message: string;
