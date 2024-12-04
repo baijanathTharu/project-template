@@ -16,6 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@libs/auth/*": ["libs/auth/src/*"],
       "@libs/core-contract/*": ["libs/core-contract/src/*"],
       "@libs/kysely-db/*": ["libs/kysely-db/src/*"]
     }

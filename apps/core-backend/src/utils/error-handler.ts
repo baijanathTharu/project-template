@@ -28,3 +28,7 @@ export function customNext(next: NextFunction, arg?: TNextError) {
 
   return next();
 }
+
+export function notFoundHandler(req: Request, res: Response) {
+  res.status(404).json({ error: 'Not found' });
+}
