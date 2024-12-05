@@ -23,7 +23,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'verify-email/:email',
+        path: 'verify-email',
         element: <VerifyEmailPage />,
       },
       {

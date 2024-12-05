@@ -1,5 +1,5 @@
 import { Card, Input, Button } from '@nextui-org/react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,12 +18,13 @@ export function VerifyEmailPage() {
 
   const navigate = useNavigate();
 
-  const params = useParams();
-  const email = params.email ?? '';
+  const [params, _] = useSearchParams();
+  const email = params.get('email') ?? '';
 
   const {
     handleSubmit,
     register,
+    watch,
     formState: { errors },
   } = useForm<TVerifyEmailSchema>({
     mode: 'all',
@@ -59,11 +60,13 @@ export function VerifyEmailPage() {
     }
   };
 
+  const inputEmail = watch('email');
+
   const resendOtp = async () => {
     try {
       await sendOtpMutation.mutateAsync(
         {
-          email,
+          email: inputEmail,
         },
         {
           onSuccess: () => {
@@ -93,7 +96,6 @@ export function VerifyEmailPage() {
               labelPlacement="outside"
               placeholder="Enter your email"
               variant="bordered"
-              disabled
               errorMessage={errors.email?.message}
               isInvalid={!!errors.email}
               {...register('email')}
@@ -116,7 +118,7 @@ export function VerifyEmailPage() {
             type="button"
             color="secondary"
             className="w-full"
-            onClick={resendOtp}
+            onClick={() => resendOtp()}
           >
             {sendOtpMutation.isLoading ? 'Resending OTP...' : 'Resend OTP'}
           </Button>

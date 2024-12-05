@@ -90,6 +90,15 @@ export function LoginPage() {
           </Button>
         </form>
         <p className="text-center">
+          Haven't verified your email?{' '}
+          <Link
+            to="/auth/verify-email"
+            className="text-blue-600 hover:underline"
+          >
+            Verify email
+          </Link>
+        </p>
+        <p className="text-center">
           Don't have an account?{' '}
           <Link to="/auth/signup" className="text-blue-600 hover:underline">
             Sign up

@@ -51,7 +51,9 @@ export function SignUpPage() {
               {
                 onSuccess: () => {
                   toastSuccess('OTP sent successfully!');
-                  navigate(`/auth/verify-email/${data.email}`);
+                  navigate(
+                    `/auth/verify-email?email=${encodeURIComponent(data.email)}`
+                  );
                 },
                 onError: (error) => {
                   console.error(error);

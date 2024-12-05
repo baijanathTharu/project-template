@@ -159,10 +159,10 @@ export class MeRouteHandler implements IMeRouteHandler {
 }
 
 export class VerifyEmailHandler implements IVerifyEmailHandler {
-  isOtpValid: (email: string, otp: string) => Promise<boolean> = async (
-    email,
-    otp
-  ) => {
+  updateEmailVerificationStatusAndValidateOtp: (
+    email: string,
+    otp: string
+  ) => Promise<boolean> = async (email, otp) => {
     const user = await userRepo.findByEmail(email);
 
     if (!user) {
@@ -182,14 +182,24 @@ export class VerifyEmailHandler implements IVerifyEmailHandler {
     const isExpired =
       latestOtp.created_at.getTime() > Date.now() - 60 * 5 * 1000; // 5 minutes
 
-    return isOtpMatched && !isExpired;
+    const isOtpValid = isOtpMatched && !isExpired;
+
+    /**
+     * update the field
+     * is_email_verified
+     */
+    if (isOtpValid) {
+      await userRepo.update(user.id, { is_email_verified: true });
+    }
+
+    return isOtpValid;
   };
 
   isEmailAlreadyVerified: (email: string) => Promise<boolean> = async (
     email
   ) => {
     const user = await userRepo.findByEmail(email);
-    return !!user?.is_email_verified;
+    return !user?.is_email_verified;
   };
 }
 
