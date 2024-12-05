@@ -4,6 +4,7 @@ import { SignUpPage } from '../pages/signup';
 import { LoginPage } from '../pages/login';
 import { DashboardPage } from '../pages/dashboard';
 import { WithAuth, WithoutAuth } from '../components/auth';
+import { VerifyEmailPage } from '../pages/verify-email';
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ export const router = createBrowserRouter([
             <SignUpPage />
           </WithoutAuth>
         ),
+      },
+      {
+        path: 'verify-email/:email',
+        element: <VerifyEmailPage />,
       },
       {
         path: 'login',

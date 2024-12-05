@@ -166,19 +166,21 @@ export class VerifyEmailHandler implements IVerifyEmailHandler {
     const user = await userRepo.findByEmail(email);
 
     if (!user) {
+      logger.debug('User not found');
       return false;
     }
 
     const latestOtp = await userRepo.getLatestOtpByUserId(user.id);
 
     if (!latestOtp) {
+      logger.debug('Latest otp not found');
       return false;
     }
 
     const isOtpMatched = latestOtp.code === otp;
 
     const isExpired =
-      latestOtp.created_at.getTime() < Date.now() - 60 * 5 * 1000; // 5 minutes
+      latestOtp.created_at.getTime() > Date.now() - 60 * 5 * 1000; // 5 minutes
 
     return isOtpMatched && !isExpired;
   };
@@ -187,8 +189,7 @@ export class VerifyEmailHandler implements IVerifyEmailHandler {
     email
   ) => {
     const user = await userRepo.findByEmail(email);
-
-    return !user?.is_email_verified;
+    return !!user?.is_email_verified;
   };
 }
 

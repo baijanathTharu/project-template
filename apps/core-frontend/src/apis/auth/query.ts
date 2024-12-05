@@ -3,13 +3,19 @@ import {
   login,
   logout,
   me,
+  sendOtp,
   signUp,
   TLoginInput,
   TLoginOutput,
   TLogoutOutput,
   TMeOutput,
+  TSendOtpInput,
+  TSendOtpOutput,
   TSignUpInput,
   TSignUpOutput,
+  TVerifyEmailInput,
+  TVerifyEmailOutput,
+  verifyEmail,
 } from './fetcher';
 
 // for register api
@@ -32,7 +38,6 @@ export function useMeQuery() {
     queryKey: ['me'],
     queryFn: me,
     retry: false,
-    refetchOnMount: true,
   });
 }
 
@@ -40,5 +45,19 @@ export function useMeQuery() {
 export function useLogoutMutation() {
   return useMutation<TLogoutOutput, Error, object>({
     mutationFn: logout,
+  });
+}
+
+// for send otp api
+export function useSendOtpMutation() {
+  return useMutation<TSendOtpOutput, Error, TSendOtpInput>({
+    mutationFn: sendOtp,
+  });
+}
+
+// for verify email api
+export function useVerifyEmailMutation() {
+  return useMutation<TVerifyEmailOutput, Error, TVerifyEmailInput>({
+    mutationFn: verifyEmail,
   });
 }

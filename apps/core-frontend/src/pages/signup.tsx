@@ -3,7 +3,7 @@ import { Card, Input, Button } from '@nextui-org/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { useSignUpMutation } from '../apis/auth/query';
+import { useSendOtpMutation, useSignUpMutation } from '../apis/auth/query';
 import { toastError, toastSuccess } from '../app/toaster';
 
 const signUpSchema = z.object({
@@ -17,6 +17,8 @@ type TSignUpSchema = z.infer<typeof signUpSchema>;
 export function SignUpPage() {
   const navigate = useNavigate();
   const signUpMutation = useSignUpMutation();
+  const sendOtpMutation = useSendOtpMutation();
+
   const {
     handleSubmit,
     register,
@@ -40,9 +42,23 @@ export function SignUpPage() {
           password: data.password,
         },
         {
-          onSuccess: () => {
+          onSuccess: async () => {
             toastSuccess('Sign up successful!');
-            navigate(`/auth/login`);
+            await sendOtpMutation.mutateAsync(
+              {
+                email: data.email,
+              },
+              {
+                onSuccess: () => {
+                  toastSuccess('OTP sent successfully!');
+                  navigate(`/auth/verify-email/${data.email}`);
+                },
+                onError: (error) => {
+                  console.error(error);
+                  toastError(error.message ?? 'Sending OTP failed');
+                },
+              }
+            );
           },
           onError: (error) => {
             console.error(error);
@@ -61,7 +77,7 @@ export function SignUpPage() {
       <Card className="w-full max-w-md p-6 space-y-6">
         <h1 className="text-2xl font-bold text-center">Sign Up</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="mb-4">
+          <div className="pb-4">
             <Input
               type="email"
               label="Email"
@@ -73,7 +89,7 @@ export function SignUpPage() {
             />
           </div>
 
-          <div className="mb-4">
+          <div className="pb-4">
             <Input
               type="text"
               label="name"
@@ -85,7 +101,7 @@ export function SignUpPage() {
             />
           </div>
 
-          <div className="mb-4">
+          <div className="pb-4">
             <Input
               type="password"
               label="Password"

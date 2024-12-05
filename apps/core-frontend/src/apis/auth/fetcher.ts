@@ -119,3 +119,68 @@ export async function logout(): Promise<TLogoutOutput> {
 
   return data;
 }
+
+export type TSendOtpOutput = {
+  message: string;
+};
+export type TSendOtpInput = {
+  email: string;
+};
+
+export async function sendOtp(input: TSendOtpInput): Promise<TSendOtpOutput> {
+  const res = await fetch(`${env.VITE_BACKEND_URL}/v1/auth/send-otp`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email: input.email,
+    }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    console.error(data);
+    throw new Error(
+      data.message ||
+        'Something went wrong! Please check console for more details.'
+    );
+  }
+
+  return data;
+}
+
+export type TVerifyEmailInput = {
+  email: string;
+  otp: string;
+};
+export type TVerifyEmailOutput = {
+  message: string;
+};
+export async function verifyEmail(
+  input: TVerifyEmailInput
+): Promise<TVerifyEmailOutput> {
+  const res = await fetch(`${env.VITE_BACKEND_URL}/v1/auth/verify-email`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email: input.email,
+      otp: input.otp,
+    }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    console.error(data);
+    throw new Error(
+      data.message ||
+        'Something went wrong! Please check console for more details.'
+    );
+  }
+
+  return data;
+}

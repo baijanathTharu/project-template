@@ -9,7 +9,7 @@ export class EmailNotificationService implements INotifyService {
     email: string,
     payload: { code: string; generatedAt: number }
   ): Promise<void> {
-    logger.info(`Notifying | OTP | Email: ${email}`, payload);
+    logger.info({ payload }, `Notifying | OTP | Email: ${email}`);
   }
   async notifyEmailVerified(email: string): Promise<void> {
     logger.info(`Notifying | EMAIL_VERIFIED | Email: ${email}`);

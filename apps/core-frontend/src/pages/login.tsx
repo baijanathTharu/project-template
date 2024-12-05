@@ -58,7 +58,7 @@ export function LoginPage() {
       <Card className="w-full max-w-md p-6 space-y-6">
         <h1 className="text-2xl font-bold text-center">Log In</h1>
         <form onSubmit={handleSubmit(onLogin)} className="space-y-4">
-          <div className="mb-4">
+          <div className="pb-4">
             <Input
               type="email"
               label="Email"
@@ -70,7 +70,7 @@ export function LoginPage() {
               {...register('email')}
             />
           </div>
-          <div className="mb-4">
+          <div className="pb-4">
             <Input
               type="password"
               label="Password"
