@@ -3,8 +3,10 @@ import {
   TLoginResponseCodes,
   TLogoutResponseCodes,
   TMeResponseCodes,
+  TRefreshResponseCodes,
   TSendOtpResponseCodes,
   TSignUpResponseCodes,
+  TValidateTokenResponseCodes,
   TVerifyEmailResponseCodes,
 } from '@libs/core-contract/auth';
 import { env } from '../../app/env';
@@ -65,7 +67,7 @@ export async function login(input: TLoginInput): Promise<TLoginOutput> {
 
 export type TMeOutput = {
   message: string;
-  code: TMeResponseCodes;
+  code: TMeResponseCodes | TValidateTokenResponseCodes;
   accessToken: string;
   data: {
     me: {
@@ -190,6 +192,25 @@ export async function forgotPassword(
       otp: input.otp,
       newPassword: input.newPassword,
     }),
+  });
+
+  const data = await res.json();
+
+  return data;
+}
+
+export type TRefreshTokenOutput = {
+  message: string;
+  code: TRefreshResponseCodes;
+};
+
+export async function refreshToken(): Promise<TRefreshTokenOutput> {
+  const res = await fetch(`${env.VITE_BACKEND_URL}/v1/auth/refresh`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 
   const data = await res.json();

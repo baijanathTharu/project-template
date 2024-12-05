@@ -4,6 +4,7 @@ import {
   login,
   logout,
   me,
+  refreshToken,
   sendOtp,
   signUp,
   TForgotPasswordInput,
@@ -12,6 +13,7 @@ import {
   TLoginOutput,
   TLogoutOutput,
   TMeOutput,
+  TRefreshTokenOutput,
   TSendOtpInput,
   TSendOtpOutput,
   TSignUpInput,
@@ -20,6 +22,8 @@ import {
   TVerifyEmailOutput,
   verifyEmail,
 } from './fetcher';
+import { useRef } from 'react';
+import { toastError } from '../../app/toaster';
 
 // for register api
 export function useSignUpMutation() {
@@ -35,12 +39,41 @@ export function useLoginMutation() {
   });
 }
 
+// for refreshing token api
+
+export function useRefreshTokenMutation() {
+  return useMutation<TRefreshTokenOutput, Error, object>({
+    mutationFn: refreshToken,
+  });
+}
+
 // for me api
 export function useMeQuery() {
+  const retryRef = useRef(0);
+  const refreshToken = useRefreshTokenMutation();
   return useQuery<TMeOutput, Error>({
-    queryKey: ['me'],
+    queryKey: ['me', retryRef.current],
     queryFn: me,
     retry: false,
+    async onSuccess(data) {
+      if (data.code === 'INVALID_TOKEN' || data.code === 'MISSING_TOKEN') {
+        await refreshToken.mutateAsync(
+          {},
+          {
+            onSuccess: (res) => {
+              if (res.code !== 'REFRESH_SUCCESS') {
+                toastError(
+                  res.message ??
+                    'Refreshing token failed! You will be logged out!'
+                );
+                return;
+              }
+              retryRef.current += 1;
+            },
+          }
+        );
+      }
+    },
   });
 }
 
