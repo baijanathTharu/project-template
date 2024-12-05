@@ -1041,10 +1041,10 @@
     "@babel/helper-string-parser" "^7.25.9"
     "@babel/helper-validator-identifier" "^7.25.9"
 
-"@baijanstack/express-auth@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@baijanstack/express-auth/-/express-auth-1.0.1.tgz#f014d02a9183f8ec16b091967dc5058fd50d9b80"
-  integrity sha512-7l0C/nJ/SIuCsktq8ATThwAtHE0m4dUQZS83Qxla1d7tve4l51n03zucmfrDdmwkT6NSHEZP2RW2yRC7dDxBMA==
+"@baijanstack/express-auth@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@baijanstack/express-auth/-/express-auth-1.0.3.tgz#6fa3131782bc8e5932dfc2394d835be4d4069db0"
+  integrity sha512-8aHm5O2nfvWVbyTlja4YcdUF1QBMsKeGxhIBmEjh/B+Dps/iPAtg/jkvTivYtc+yx6NA8hds7+dC+MtLCFZq3A==
   dependencies:
     bcryptjs "^2.4.3"
     express "^4.21.0"

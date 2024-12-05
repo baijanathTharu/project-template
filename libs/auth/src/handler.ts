@@ -242,7 +242,7 @@ export class ForgotPasswordHandler implements IForgotPasswordHandler {
     const isOtpMatched = latestOtp.code === otp;
 
     const isExpired =
-      latestOtp.created_at.getTime() < Date.now() - 60 * 5 * 1000; // 5 minutes
+      latestOtp.created_at.getTime() > Date.now() - 60 * 5 * 1000; // 5 minutes
 
     return isOtpMatched && !isExpired;
   };

@@ -4,17 +4,21 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toastError, toastSuccess } from '../app/toaster';
-import { useSendOtpMutation, useVerifyEmailMutation } from '../apis/auth/query';
+import {
+  useForgotPasswordMutation,
+  useSendOtpMutation,
+} from '../apis/auth/query';
 
-const VerifyEmailSchema = z.object({
+const ForgotPasswordSchema = z.object({
   email: z.string().email(),
   code: z.string().min(6),
+  password: z.string().min(6),
 });
-type TVerifyEmailSchema = z.infer<typeof VerifyEmailSchema>;
+type TForgotPasswordSchema = z.infer<typeof ForgotPasswordSchema>;
 
-export function VerifyEmailPage() {
+export function ForgotPasswordPage() {
   const sendOtpMutation = useSendOtpMutation();
-  const verifyEmailMutation = useVerifyEmailMutation();
+  const forgotPasswordMutation = useForgotPasswordMutation();
 
   const navigate = useNavigate();
 
@@ -26,40 +30,44 @@ export function VerifyEmailPage() {
     register,
     watch,
     formState: { errors },
-  } = useForm<TVerifyEmailSchema>({
+  } = useForm<TForgotPasswordSchema>({
     mode: 'all',
-    resolver: zodResolver(VerifyEmailSchema),
+    resolver: zodResolver(ForgotPasswordSchema),
     defaultValues: {
       email,
       code: '',
+      password: '',
     },
   });
 
-  const onVerify: SubmitHandler<TVerifyEmailSchema> = async (data) => {
+  const onForgotPassword: SubmitHandler<TForgotPasswordSchema> = async (
+    data
+  ) => {
     try {
-      await verifyEmailMutation.mutateAsync(
+      await forgotPasswordMutation.mutateAsync(
         {
           email: data.email,
           otp: data.code,
+          newPassword: data.password,
         },
         {
           onSuccess: (res) => {
-            if (res.code !== 'VERIFY_EMAIL_SUCCESS') {
-              toastError(res.message ?? 'Verification failed');
+            if (res.code !== 'FORGOT_PASSWORD_SUCCESS') {
+              toastError(res.message ?? 'Password change failed');
               return;
             }
-            toastSuccess('Email verified successfully!');
+            toastSuccess('Password changed successfully!');
             navigate('/auth/login');
           },
           onError: (error) => {
             console.error(error);
-            toastError(error.message ?? 'Verification failed');
+            toastError(error.message ?? 'Password change failed');
           },
         }
       );
     } catch (error) {
       console.error(error);
-      toastError((error as Error)?.message ?? 'Verification failed');
+      toastError((error as Error)?.message ?? 'Password change failed');
     }
   };
 
@@ -94,8 +102,8 @@ export function VerifyEmailPage() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md p-6 space-y-6">
-        <h1 className="text-2xl font-bold text-center">Verify Your Email</h1>
-        <form onSubmit={handleSubmit(onVerify)} className="space-y-4">
+        <h1 className="text-2xl font-bold text-center">Change Your Password</h1>
+        <form onSubmit={handleSubmit(onForgotPassword)} className="space-y-4">
           <div className="pb-4">
             <Input
               type="email"
@@ -103,9 +111,22 @@ export function VerifyEmailPage() {
               labelPlacement="outside"
               placeholder="Enter your email"
               variant="bordered"
+              disabled
               errorMessage={errors.email?.message}
               isInvalid={!!errors.email}
               {...register('email')}
+            />
+          </div>
+          <div className="pb-4">
+            <Input
+              type="password"
+              label="Password"
+              labelPlacement="outside"
+              placeholder="Enter your password"
+              variant="bordered"
+              errorMessage={errors.password?.message}
+              isInvalid={!!errors.password}
+              {...register('password')}
             />
           </div>
           <div className="pb-4">

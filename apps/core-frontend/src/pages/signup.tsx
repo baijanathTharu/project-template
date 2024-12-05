@@ -33,6 +33,28 @@ export function SignUpPage() {
     },
   });
 
+  const sendOtp = async (email: string) => {
+    await sendOtpMutation.mutateAsync(
+      {
+        email,
+      },
+      {
+        onSuccess: (res) => {
+          if (res.code !== 'SEND_OTP_SUCCESS') {
+            toastError(res.message ?? 'Sending OTP failed');
+            return;
+          }
+          toastSuccess('OTP sent successfully!');
+          navigate(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+        },
+        onError: (error) => {
+          console.error(error);
+          toastError(error.message ?? 'Sending OTP failed');
+        },
+      }
+    );
+  };
+
   const onSubmit: SubmitHandler<TSignUpSchema> = async (data) => {
     try {
       await signUpMutation.mutateAsync(
@@ -42,25 +64,16 @@ export function SignUpPage() {
           password: data.password,
         },
         {
-          onSuccess: async () => {
-            toastSuccess('Sign up successful!');
-            await sendOtpMutation.mutateAsync(
-              {
-                email: data.email,
-              },
-              {
-                onSuccess: () => {
-                  toastSuccess('OTP sent successfully!');
-                  navigate(
-                    `/auth/verify-email?email=${encodeURIComponent(data.email)}`
-                  );
-                },
-                onError: (error) => {
-                  console.error(error);
-                  toastError(error.message ?? 'Sending OTP failed');
-                },
-              }
+          onSuccess: async (res) => {
+            if (res.code !== 'USER_CREATED') {
+              toastError(res.message ?? 'Sign up failed');
+              return;
+            }
+            toastSuccess(
+              'Sign up successful and Sending OTP for email verification...'
             );
+
+            await sendOtp(data.email);
           },
           onError: (error) => {
             console.error(error);

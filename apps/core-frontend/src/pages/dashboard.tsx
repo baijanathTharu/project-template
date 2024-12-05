@@ -13,7 +13,11 @@ export function DashboardPage() {
       await logoutMutation.mutateAsync(
         {},
         {
-          onSuccess: () => {
+          onSuccess: (res) => {
+            if (res.code !== 'LOGOUT_SUCCESS') {
+              toastError(res.message ?? 'Logout failed!');
+              return;
+            }
             toastSuccess('Logout successful!');
             // perform full page refresh
             window.location.href = '/auth/login';
@@ -30,15 +34,15 @@ export function DashboardPage() {
     return <Loading label="Loading user..." />;
   }
 
-  if (meQuery.isError) {
-    return <Error message={meQuery.error.message || 'Something went wrong!'} />;
+  if (meQuery.data?.code !== 'ME_SUCCESS') {
+    return <Error message={meQuery.data?.message || 'Something went wrong!'} />;
   }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md p-6 space-y-6">
         <h1 className="text-2xl font-bold text-gray-400 text-center">
-          Welcome, {meQuery.data.me.name}!
+          Welcome, {meQuery.data.data.me.name}!
         </h1>
         <p className="text-center">You have successfully logged in.</p>
         <Button

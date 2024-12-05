@@ -9,7 +9,7 @@
   },
   "private": true,
   "dependencies": {
-    "@baijanstack/express-auth": "^1.0.1",
+    "@baijanstack/express-auth": "^1.0.3",
     "@hookform/resolvers": "^3.9.1",
     "@nextui-org/react": "^2.4.8",
     "@nextui-org/system": "^2.2.6",

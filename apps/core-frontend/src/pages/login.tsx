@@ -1,9 +1,9 @@
-import { Card, Input, Button, Link as NextUILink } from '@nextui-org/react';
+import { Card, Input, Button } from '@nextui-org/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useLoginMutation } from '../apis/auth/query';
+import { useLoginMutation, useSendOtpMutation } from '../apis/auth/query';
 import { toastError, toastSuccess } from '../app/toaster';
 
 const loginSchema = z.object({
@@ -14,11 +14,14 @@ type TLoginSchema = z.infer<typeof loginSchema>;
 
 export function LoginPage() {
   const loginMutation = useLoginMutation();
+  const sendOtpMutation = useSendOtpMutation();
+
   const navigate = useNavigate();
 
   const {
     handleSubmit,
     register,
+    watch,
     formState: { errors },
   } = useForm<TLoginSchema>({
     mode: 'all',
@@ -37,7 +40,11 @@ export function LoginPage() {
           password: data.password,
         },
         {
-          onSuccess: () => {
+          onSuccess: (res) => {
+            if (res.code !== 'LOGIN_SUCCESS') {
+              toastError(res.message ?? 'Login failed');
+              return;
+            }
             toastSuccess('Login successful!');
             navigate(`/dashboard`);
           },
@@ -50,6 +57,40 @@ export function LoginPage() {
     } catch (error) {
       console.error(error);
       toastError((error as Error)?.message ?? 'Login failed');
+    }
+  };
+
+  const inputEmail = watch('email');
+  const resendOtp = async () => {
+    try {
+      if (!inputEmail) {
+        toastError('Email is required');
+        return;
+      }
+      await sendOtpMutation.mutateAsync(
+        {
+          email: inputEmail,
+        },
+        {
+          onSuccess: (res) => {
+            if (res.code !== 'SEND_OTP_SUCCESS') {
+              toastError(res.message ?? 'Sending OTP failed');
+              return;
+            }
+            toastSuccess('OTP sent successfully!');
+            navigate(
+              `/auth/forgot-password?email=${encodeURIComponent(inputEmail)}`
+            );
+          },
+          onError: (error) => {
+            console.error(error);
+            toastError(error.message ?? 'Sending OTP failed');
+          },
+        }
+      );
+    } catch (error) {
+      console.error(error);
+      toastError((error as Error)?.message ?? 'Sending OTP failed');
     }
   };
 
@@ -82,9 +123,14 @@ export function LoginPage() {
               {...register('password')}
             />
           </div>
-          <NextUILink href="#" className="text-sm">
-            Forgot password?
-          </NextUILink>
+          <p
+            className="w-full text-primary cursor-pointer hover:underline"
+            onClick={() => resendOtp()}
+          >
+            {sendOtpMutation.isLoading
+              ? 'Forgetting Password...'
+              : 'Forgot Password?'}
+          </p>
           <Button type="submit" color="primary" className="w-full">
             Log In
           </Button>

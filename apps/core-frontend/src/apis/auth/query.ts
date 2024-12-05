@@ -1,10 +1,13 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
+  forgotPassword,
   login,
   logout,
   me,
   sendOtp,
   signUp,
+  TForgotPasswordInput,
+  TForgotPasswordOutput,
   TLoginInput,
   TLoginOutput,
   TLogoutOutput,
@@ -59,5 +62,12 @@ export function useSendOtpMutation() {
 export function useVerifyEmailMutation() {
   return useMutation<TVerifyEmailOutput, Error, TVerifyEmailInput>({
     mutationFn: verifyEmail,
+  });
+}
+
+// for forgot-password api
+export function useForgotPasswordMutation() {
+  return useMutation<TForgotPasswordOutput, Error, TForgotPasswordInput>({
+    mutationFn: forgotPassword,
   });
 }

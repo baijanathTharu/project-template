@@ -11,7 +11,7 @@ export function WithAuth({ children }: { children: ReactNode }) {
     return <Loading label="Loading user..." />;
   }
 
-  if (meQuery.isError) {
+  if (meQuery.data?.code !== 'ME_SUCCESS') {
     return (
       <Error
         message={'You are not logged in!'}
@@ -34,7 +34,7 @@ export function WithoutAuth({ children }: { children: ReactNode }) {
     return <Loading label="Loading user..." />;
   }
 
-  if (meQuery.data) {
+  if (meQuery.data?.code === 'ME_SUCCESS') {
     return (
       <Error
         message="You are already logged in!"
