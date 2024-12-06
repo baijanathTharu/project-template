@@ -229,13 +229,19 @@ export type TResetPasswordOutput = {
   code: TValidateTokenResponseCodes | TResetPasswordResponseCodes;
 };
 
-export async function resetPassword(): Promise<TResetPasswordOutput> {
-  const res = await fetch(`${env.VITE_BACKEND_URL}/v1/auth/reset-password`, {
+export async function resetPassword(
+  input: TResetPasswordInput
+): Promise<TResetPasswordOutput> {
+  const res = await fetch(`${env.VITE_BACKEND_URL}/v1/auth/reset`, {
     method: 'POST',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify({
+      oldPassword: input.oldPassword,
+      newPassword: input.newPassword,
+    }),
   });
 
   const data = await res.json();

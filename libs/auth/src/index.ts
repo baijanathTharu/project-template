@@ -34,4 +34,6 @@ export function createAuth(app: Application) {
     forgotPasswordHandler: new ForgotPasswordHandler(),
     sendOtpHandler: new SendOtpHandler(),
   });
+
+  return routeGenerator;
 }
