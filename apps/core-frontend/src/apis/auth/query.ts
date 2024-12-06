@@ -5,6 +5,7 @@ import {
   logout,
   me,
   refreshToken,
+  resetPassword,
   sendOtp,
   signUp,
   TForgotPasswordInput,
@@ -14,6 +15,8 @@ import {
   TLogoutOutput,
   TMeOutput,
   TRefreshTokenOutput,
+  TResetPasswordInput,
+  TResetPasswordOutput,
   TSendOtpInput,
   TSendOtpOutput,
   TSignUpInput,
@@ -102,5 +105,12 @@ export function useVerifyEmailMutation() {
 export function useForgotPasswordMutation() {
   return useMutation<TForgotPasswordOutput, Error, TForgotPasswordInput>({
     mutationFn: forgotPassword,
+  });
+}
+
+// for reset-password api
+export function useResetPasswordMutation() {
+  return useMutation<TResetPasswordOutput, Error, TResetPasswordInput>({
+    mutationFn: resetPassword,
   });
 }

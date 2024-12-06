@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toastError, toastSuccess } from '../app/toaster';
 import { useSendOtpMutation, useVerifyEmailMutation } from '../apis/auth/query';
+import { _FULL_ROUTES } from '../app/routes';
 
 const VerifyEmailSchema = z.object({
   email: z.string().email(),
@@ -49,7 +50,7 @@ export function VerifyEmailPage() {
               return;
             }
             toastSuccess('Email verified successfully!');
-            navigate('/auth/login');
+            navigate(_FULL_ROUTES.LOGIN);
           },
           onError: (error) => {
             console.error(error);
@@ -141,7 +142,10 @@ export function VerifyEmailPage() {
 
         <p className="text-center">
           Already verified?{' '}
-          <Link to="/auth/login" className="text-blue-600 hover:underline">
+          <Link
+            to={_FULL_ROUTES.LOGIN}
+            className="text-blue-600 hover:underline"
+          >
             Log in
           </Link>
         </p>

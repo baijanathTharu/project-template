@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useSendOtpMutation, useSignUpMutation } from '../apis/auth/query';
 import { toastError, toastSuccess } from '../app/toaster';
+import { _FULL_ROUTES } from '../app/routes';
 
 const signUpSchema = z.object({
   email: z.string().email(),
@@ -45,7 +46,9 @@ export function SignUpPage() {
             return;
           }
           toastSuccess('OTP sent successfully!');
-          navigate(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+          navigate(
+            `${_FULL_ROUTES.VERIFY_EMAIL}?email=${encodeURIComponent(email)}`
+          );
         },
         onError: (error) => {
           console.error(error);
@@ -133,7 +136,10 @@ export function SignUpPage() {
         </form>
         <p className="text-center">
           Already have an account?{' '}
-          <Link to="/auth/login" className="text-blue-600 hover:underline">
+          <Link
+            to={_FULL_ROUTES.LOGIN}
+            className="text-blue-600 hover:underline"
+          >
             Log in
           </Link>
         </p>

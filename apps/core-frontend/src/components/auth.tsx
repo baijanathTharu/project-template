@@ -3,6 +3,7 @@ import { useMeQuery } from '../apis/auth/query';
 import { Loading } from './loading';
 import { Error } from './error';
 import { Link } from 'react-router-dom';
+import { _FULL_ROUTES } from '../app/routes';
 
 export function WithAuth({ children }: { children: ReactNode }) {
   const meQuery = useMeQuery();
@@ -16,7 +17,7 @@ export function WithAuth({ children }: { children: ReactNode }) {
       <Error
         message={'You are not logged in!'}
         actionNode={
-          <Link to="/auth/login" className="text-blue-500 underline">
+          <Link to={_FULL_ROUTES.LOGIN} className="text-blue-500 underline">
             Go to login
           </Link>
         }
@@ -39,7 +40,7 @@ export function WithoutAuth({ children }: { children: ReactNode }) {
       <Error
         message="You are already logged in!"
         actionNode={
-          <Link to="/dashboard" className="text-blue-500 underline">
+          <Link to={_FULL_ROUTES.DASHBOARD} className="text-blue-500 underline">
             Go to dashboard
           </Link>
         }

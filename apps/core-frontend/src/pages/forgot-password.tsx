@@ -8,6 +8,7 @@ import {
   useForgotPasswordMutation,
   useSendOtpMutation,
 } from '../apis/auth/query';
+import { _FULL_ROUTES } from '../app/routes';
 
 const ForgotPasswordSchema = z.object({
   email: z.string().email(),
@@ -57,7 +58,7 @@ export function ForgotPasswordPage() {
               return;
             }
             toastSuccess('Password changed successfully!');
-            navigate('/auth/login');
+            navigate(_FULL_ROUTES.LOGIN);
           },
           onError: (error) => {
             console.error(error);
@@ -162,7 +163,10 @@ export function ForgotPasswordPage() {
 
         <p className="text-center">
           Already verified?{' '}
-          <Link to="/auth/login" className="text-blue-600 hover:underline">
+          <Link
+            to={_FULL_ROUTES.LOGIN}
+            className="text-blue-600 hover:underline"
+          >
             Log in
           </Link>
         </p>

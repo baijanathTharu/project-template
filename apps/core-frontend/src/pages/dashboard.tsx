@@ -3,6 +3,8 @@ import { useLogoutMutation, useMeQuery } from '../apis/auth/query';
 import { Error } from '../components/error';
 import { toastError, toastSuccess } from '../app/toaster';
 import { Loading } from '../components/loading';
+import { Link } from 'react-router-dom';
+import { _FULL_ROUTES } from '../app/routes';
 
 export function DashboardPage() {
   const meQuery = useMeQuery();
@@ -45,6 +47,12 @@ export function DashboardPage() {
           Welcome, {meQuery.data.data.me.name}!
         </h1>
         <p className="text-center">You have successfully logged in.</p>
+        <Link
+          to={_FULL_ROUTES.RESET_PASSWORD}
+          className="text-center text-blue-500 underline"
+        >
+          Reset Password
+        </Link>
         <Button
           color="primary"
           isDisabled={logoutMutation.isLoading}

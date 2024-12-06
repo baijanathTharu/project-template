@@ -4,6 +4,7 @@ import {
   TLogoutResponseCodes,
   TMeResponseCodes,
   TRefreshResponseCodes,
+  TResetPasswordResponseCodes,
   TSendOtpResponseCodes,
   TSignUpResponseCodes,
   TValidateTokenResponseCodes,
@@ -206,6 +207,30 @@ export type TRefreshTokenOutput = {
 
 export async function refreshToken(): Promise<TRefreshTokenOutput> {
   const res = await fetch(`${env.VITE_BACKEND_URL}/v1/auth/refresh`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const data = await res.json();
+
+  return data;
+}
+
+export type TResetPasswordInput = {
+  oldPassword: string;
+  newPassword: string;
+};
+
+export type TResetPasswordOutput = {
+  message: string;
+  code: TValidateTokenResponseCodes | TResetPasswordResponseCodes;
+};
+
+export async function resetPassword(): Promise<TResetPasswordOutput> {
+  const res = await fetch(`${env.VITE_BACKEND_URL}/v1/auth/reset-password`, {
     method: 'POST',
     credentials: 'include',
     headers: {

@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLoginMutation, useSendOtpMutation } from '../apis/auth/query';
 import { toastError, toastSuccess } from '../app/toaster';
+import { _FULL_ROUTES } from '../app/routes';
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -46,7 +47,7 @@ export function LoginPage() {
               return;
             }
             toastSuccess('Login successful!');
-            navigate(`/dashboard`);
+            navigate(_FULL_ROUTES.DASHBOARD);
           },
           onError: (error) => {
             console.error(error);
@@ -79,7 +80,9 @@ export function LoginPage() {
             }
             toastSuccess('OTP sent successfully!');
             navigate(
-              `/auth/forgot-password?email=${encodeURIComponent(inputEmail)}`
+              `${_FULL_ROUTES.FORGOT_PASSWORD}?email=${encodeURIComponent(
+                inputEmail
+              )}`
             );
           },
           onError: (error) => {
@@ -138,7 +141,7 @@ export function LoginPage() {
         <p className="text-center">
           Haven't verified your email?{' '}
           <Link
-            to="/auth/verify-email"
+            to={_FULL_ROUTES.VERIFY_EMAIL}
             className="text-blue-600 hover:underline"
           >
             Verify email
@@ -146,7 +149,10 @@ export function LoginPage() {
         </p>
         <p className="text-center">
           Don't have an account?{' '}
-          <Link to="/auth/signup" className="text-blue-600 hover:underline">
+          <Link
+            to={_FULL_ROUTES.SIGNUP}
+            className="text-blue-600 hover:underline"
+          >
             Sign up
           </Link>
         </p>
