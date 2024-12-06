@@ -19,7 +19,8 @@ export type TEnv = {
     TOKEN_SECRET: string;
     ACCESS_TOKEN_AGE: number;
     REFRESH_TOKEN_AGE: number;
-    EMAIL_VERIFICATION_TOKEN_AGE: number;
+    OTP_AGE: number;
+    OTP_SECRET: string;
   };
 };
 export const env: TEnv = {
@@ -38,7 +39,7 @@ export const env: TEnv = {
     TOKEN_SECRET: process.env['TOKEN_SECRET'] || '',
     ACCESS_TOKEN_AGE: Number(process.env['ACCESS_TOKEN_AGE']) || 60000,
     REFRESH_TOKEN_AGE: Number(process.env['REFRESH_TOKEN_AGE']) || 86400000,
-    EMAIL_VERIFICATION_TOKEN_AGE:
-      Number(process.env['EMAIL_VERIFICATION_TOKEN_AGE']) || 86400000,
+    OTP_AGE: Number(process.env['OTP_AGE']) || 50,
+    OTP_SECRET: process.env['OTP_SECRET'] || '',
   },
 };

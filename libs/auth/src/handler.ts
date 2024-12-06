@@ -10,7 +10,6 @@ import {
   ISendOtpHandler,
 } from '@baijanstack/express-auth';
 
-import { logger } from '@libs/core-contract/utils/logger';
 import { userRepo } from '@libs/kysely-db/repositories/auth-repo';
 
 export type TUser = {
@@ -18,10 +17,6 @@ export type TUser = {
   email: string;
   password: string;
   is_email_verified: boolean;
-  otps: {
-    code: string;
-    generatedAt: number;
-  }[];
 };
 
 type TEmailObj = {
@@ -35,10 +30,8 @@ interface TSignUpBodyInput extends TEmailObj {
 
 export class SignUpHandler implements ISignUpHandler {
   constructor() {
-    logger.info('signup persistor init...');
+    //
   }
-
-  errors: { USER_ALREADY_EXISTS_MESSAGE?: string } = {};
 
   doesUserExists: (body: TSignUpBodyInput) => Promise<boolean> = async (
     body
@@ -75,9 +68,6 @@ export class LoginHandler implements ILoginHandler {
       otps: [],
     };
   };
-  errors: { PASSWORD_OR_EMAIL_INCORRECT?: string } = {
-    PASSWORD_OR_EMAIL_INCORRECT: 'Password or email incorrect',
-  };
 
   getTokenPayload: (email: string) => Promise<{
     name: string;
@@ -103,12 +93,6 @@ export class LogoutHandler implements ILogoutHandler {
 }
 
 export class RefreshHandler implements IRefreshHandler {
-  errors: { INVALID_REFRESH_TOKEN?: string } = {};
-
-  refresh: (token: string) => Promise<void> = async () => {
-    logger.info('refreshing token...');
-  };
-
   getTokenPayload: (email: string) => Promise<{
     name: string;
     email: string;
@@ -159,40 +143,10 @@ export class MeRouteHandler implements IMeRouteHandler {
 }
 
 export class VerifyEmailHandler implements IVerifyEmailHandler {
-  updateEmailVerificationStatusAndValidateOtp: (
-    email: string,
-    otp: string
-  ) => Promise<boolean> = async (email, otp) => {
-    const user = await userRepo.findByEmail(email);
-
-    if (!user) {
-      logger.debug('User not found');
-      return false;
-    }
-
-    const latestOtp = await userRepo.getLatestOtpByUserId(user.id);
-
-    if (!latestOtp) {
-      logger.debug('Latest otp not found');
-      return false;
-    }
-
-    const isOtpMatched = latestOtp.code === otp;
-
-    const isExpired =
-      latestOtp.created_at.getTime() > Date.now() - 60 * 5 * 1000; // 5 minutes
-
-    const isOtpValid = isOtpMatched && !isExpired;
-
-    /**
-     * update the field
-     * is_email_verified
-     */
-    if (isOtpValid) {
-      await userRepo.update(user.id, { is_email_verified: true });
-    }
-
-    return isOtpValid;
+  updateIsEmailVerifiedField: (email: string) => Promise<void> = async (
+    email
+  ) => {
+    await userRepo.updateByEmail(email, { is_email_verified: true });
   };
 
   isEmailAlreadyVerified: (email: string) => Promise<boolean> = async (
@@ -208,45 +162,9 @@ export class SendOtpHandler implements ISendOtpHandler {
     const user = await userRepo.findByEmail(email);
     return !!user;
   };
-
-  saveOtp: (
-    email: string,
-    otp: { code: string; generatedAt: number }
-  ) => Promise<void> = async (email, otp) => {
-    const user = await userRepo.findByEmail(email);
-
-    if (!user) {
-      throw new Error(`User not found`);
-    }
-    await userRepo.createOtp(user.id, otp.code);
-  };
 }
 
 export class ForgotPasswordHandler implements IForgotPasswordHandler {
-  isOtpValid: (email: string, otp: string) => Promise<boolean> = async (
-    email,
-    otp
-  ) => {
-    const user = await userRepo.findByEmail(email);
-
-    if (!user) {
-      return false;
-    }
-
-    const latestOtp = await userRepo.getLatestOtpByUserId(user.id);
-
-    if (!latestOtp) {
-      return false;
-    }
-
-    const isOtpMatched = latestOtp.code === otp;
-
-    const isExpired =
-      latestOtp.created_at.getTime() > Date.now() - 60 * 5 * 1000; // 5 minutes
-
-    return isOtpMatched && !isExpired;
-  };
-
   saveNewPassword: (email: string, password: string) => Promise<void> = async (
     email,
     password

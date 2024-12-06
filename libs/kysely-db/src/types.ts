@@ -9,7 +9,6 @@ import {
 export interface Database {
   todo: TodoTable;
   user: UserTable;
-  auth_otp: AuthOtpTable;
 }
 
 export interface TodoTable {
@@ -36,15 +35,3 @@ export interface UserTable {
 export type User = Selectable<UserTable>;
 export type NewUser = Insertable<UserTable>;
 export type UserUpdate = Updateable<UserTable>;
-
-export interface AuthOtpTable {
-  id: string;
-  user_id: string;
-  code: string;
-  updated_at: ColumnType<Date, string | undefined, never>;
-  created_at: ColumnType<Date, string | undefined, never>;
-}
-
-export type AuthOtp = Selectable<AuthOtpTable>;
-export type NewAuthOtp = Insertable<AuthOtpTable>;
-export type AuthOtpUpdate = Updateable<AuthOtpTable>;

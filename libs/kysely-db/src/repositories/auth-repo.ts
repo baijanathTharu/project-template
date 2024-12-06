@@ -42,8 +42,16 @@ async function findMany(criteria: Partial<User>) {
   return await query.selectAll().execute();
 }
 
-async function update(id: string, updateWith: UserUpdate) {
+async function updateById(id: string, updateWith: UserUpdate) {
   await db.updateTable('user').set(updateWith).where('id', '=', id).execute();
+}
+
+async function updateByEmail(email: string, updateWith: UserUpdate) {
+  await db
+    .updateTable('user')
+    .set(updateWith)
+    .where('email', '=', email)
+    .execute();
 }
 
 async function create(user: NewUser) {
@@ -71,35 +79,13 @@ async function deleteById(id: string) {
     .executeTakeFirst();
 }
 
-async function getLatestOtpByUserId(userId: string) {
-  return await db
-    .selectFrom('auth_otp')
-    .where('user_id', '=', userId)
-    .orderBy('created_at', 'desc')
-    .selectAll()
-    .executeTakeFirst();
-}
-
-async function createOtp(userId: string, code: string) {
-  return await db
-    .insertInto('auth_otp')
-    .values({
-      id: crypto.randomUUID(),
-      user_id: userId,
-      code: code,
-    })
-    .returningAll()
-    .executeTakeFirst();
-}
-
 export const userRepo = {
   findById,
   findByEmail,
   findMany,
-  update,
+  updateById,
+  updateByEmail,
   create,
   deleteById,
   updatePasswordByEmail,
-  getLatestOtpByUserId,
-  createOtp,
 };
