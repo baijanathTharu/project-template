@@ -8,6 +8,7 @@ import { VerifyEmailPage } from '../pages/verify-email';
 import { ForgotPasswordPage } from '../pages/forgot-password';
 import { ResetPasswordPage } from '../pages/reset-password';
 import { _FULL_ROUTES, _ROUTER_NESTED_PATHS } from './routes';
+import { CoursePage } from '../pages/course/course';
 
 export const router = createBrowserRouter([
   {
@@ -58,5 +59,9 @@ export const router = createBrowserRouter([
         <DashboardPage />
       </WithAuth>
     ),
+  },
+  {
+    path: '/course',
+    element: <CoursePage />,
   },
 ]);
