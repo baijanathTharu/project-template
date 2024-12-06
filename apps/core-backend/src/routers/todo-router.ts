@@ -1,12 +1,12 @@
 import { initServer } from '@ts-rest/express';
 import { todoContract } from '@libs/core-contract/index';
-import { todoRepo } from '@libs/kysely-db/repositories/todo-repo';
+import { todoRepo } from '@libs/prisma-db/repositories/todo-repo';
 
 const s = initServer();
 
 export const todoRouter = s.router(todoContract, {
   getTodos: async () => {
-    const todos = await todoRepo.findTodo({});
+    const todos = await todoRepo.findAll({});
 
     return {
       status: 200,
@@ -14,7 +14,7 @@ export const todoRouter = s.router(todoContract, {
         data: todos.map((t) => {
           return {
             id: t.id,
-            title: t.name,
+            title: t.title,
             completed: t.is_completed,
           };
         }),
@@ -24,7 +24,7 @@ export const todoRouter = s.router(todoContract, {
     };
   },
   getTodo: async ({ params }) => {
-    const todo = await todoRepo.findTodoById(Number(params.id));
+    const todo = await todoRepo.findById(params.id);
 
     if (!todo) {
       return {
@@ -40,7 +40,7 @@ export const todoRouter = s.router(todoContract, {
       body: {
         data: {
           id: todo.id,
-          title: todo.name,
+          title: todo.title,
           completed: todo.is_completed,
         },
         isSuccess: true,
@@ -49,8 +49,8 @@ export const todoRouter = s.router(todoContract, {
     };
   },
   createTodo: async ({ body }) => {
-    const todo = await todoRepo.createTodo({
-      name: body.title,
+    const todo = await todoRepo.create({
+      title: body.title,
       is_completed: body.completed,
     });
     return {
@@ -58,7 +58,7 @@ export const todoRouter = s.router(todoContract, {
       body: {
         data: {
           id: todo.id,
-          title: todo.name,
+          title: todo.title,
           completed: todo.is_completed,
         },
         isSuccess: true,
@@ -68,7 +68,7 @@ export const todoRouter = s.router(todoContract, {
   },
 
   updateTodo: async ({ params, body }) => {
-    const todo = await todoRepo.findTodoById(Number(params.id));
+    const todo = await todoRepo.findById(params.id);
 
     if (!todo) {
       return {
@@ -80,8 +80,8 @@ export const todoRouter = s.router(todoContract, {
       };
     }
 
-    await todoRepo.updateTodo(Number(params.id), {
-      name: body.title,
+    await todoRepo.updateById(params.id, {
+      title: body.title,
       is_completed: body.completed,
     });
 
@@ -90,7 +90,7 @@ export const todoRouter = s.router(todoContract, {
       body: {
         data: {
           id: todo.id,
-          title: todo.name,
+          title: todo.title,
           completed: todo.is_completed,
         },
         isSuccess: true,
@@ -100,7 +100,7 @@ export const todoRouter = s.router(todoContract, {
   },
 
   deleteTodo: async ({ params }) => {
-    const todo = await todoRepo.findTodoById(Number(params.id));
+    const todo = await todoRepo.findById(params.id);
 
     if (!todo) {
       return {
@@ -112,14 +112,14 @@ export const todoRouter = s.router(todoContract, {
       };
     }
 
-    await todoRepo.deleteTodo(Number(params.id));
+    await todoRepo.deleteById(params.id);
 
     return {
       status: 200,
       body: {
         data: {
           id: todo.id,
-          title: todo.name,
+          title: todo.title,
           completed: todo.is_completed,
         },
         isSuccess: true,

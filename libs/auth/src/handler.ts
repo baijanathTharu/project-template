@@ -9,8 +9,7 @@ import {
   IForgotPasswordHandler,
   ISendOtpHandler,
 } from '@baijanstack/express-auth';
-
-import { userRepo } from '@libs/kysely-db/repositories/auth-repo';
+import { userRepo } from '@libs/prisma-db/repositories/user-repo';
 
 export type TUser = {
   name: string;
@@ -65,7 +64,6 @@ export class LoginHandler implements ILoginHandler {
       email: user?.email,
       password: user?.password,
       is_email_verified: user?.is_email_verified,
-      otps: [],
     };
   };
 
@@ -113,7 +111,9 @@ export class RefreshHandler implements IRefreshHandler {
 export class ResetPasswordHandler implements IResetPasswordHandler {
   saveHashedPassword: (email: string, hashedPassword: string) => Promise<void> =
     async (email, hashedPassword) => {
-      await userRepo.updatePasswordByEmail(email, hashedPassword);
+      await userRepo.updateByEmail(email, {
+        password: hashedPassword,
+      });
     };
   getOldPasswordHash: (email: string) => Promise<string> = async (email) => {
     const user = await userRepo.findByEmail(email);
@@ -169,6 +169,8 @@ export class ForgotPasswordHandler implements IForgotPasswordHandler {
     email,
     password
   ) => {
-    await userRepo.updatePasswordByEmail(email, password);
+    await userRepo.updateByEmail(email, {
+      password,
+    });
   };
 }

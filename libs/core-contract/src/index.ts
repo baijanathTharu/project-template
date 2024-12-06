@@ -14,7 +14,7 @@ const SuccessSchema = z.object({
 });
 
 export const TodoSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   title: z.string(),
   completed: z.boolean(),
 });

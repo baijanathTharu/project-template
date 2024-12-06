@@ -1,9 +1,0 @@
-{
-  "name": "kysely-db",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/kysely-db/src",
-  "projectType": "library",
-  "tags": [],
-  "// targets": "to see all targets run: nx show project kysely-db --web",
-  "targets": {}
-}

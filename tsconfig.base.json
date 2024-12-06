@@ -18,7 +18,7 @@
     "paths": {
       "@libs/auth/*": ["libs/auth/src/*"],
       "@libs/core-contract/*": ["libs/core-contract/src/*"],
-      "@libs/kysely-db/*": ["libs/kysely-db/src/*"]
+      "@libs/prisma-db/*": ["libs/prisma-db/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
