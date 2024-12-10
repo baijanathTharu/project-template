@@ -27,6 +27,7 @@ export * from './core/helpers/common';
 export * from './core/helpers/editor-commands';
 export * from './core/helpers/yjs';
 export * from './core/extensions/table/table';
+export * from './core/extensions/drag-drop';
 
 // components
 export * from './core/components/menus';

@@ -5,6 +5,7 @@ export function EPage() {
     <div className="p-8">
       <RichTextEditorWithRef
         bubbleMenuEnabled={true}
+        dragDropEnabled={true}
         disabledExtensions={[]}
         fileHandler={{
           getAssetSrc: function (path: string): Promise<string> {
