@@ -9,11 +9,16 @@ import { ForgotPasswordPage } from '../pages/forgot-password';
 import { ResetPasswordPage } from '../pages/reset-password';
 import { _FULL_ROUTES, _ROUTER_NESTED_PATHS } from './routes';
 import { CoursePage } from '../pages/course/course';
+import { EPage } from '../pages/e';
 
 export const router = createBrowserRouter([
   {
     path: _FULL_ROUTES.HOME,
     element: <HomePage />,
+  },
+  {
+    path: '/e',
+    element: <EPage />,
   },
   {
     path: _FULL_ROUTES.BASE_AUTH,

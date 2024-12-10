@@ -17,6 +17,7 @@
     "baseUrl": ".",
     "paths": {
       "@libs/auth/*": ["libs/auth/src/*"],
+      "@libs/baijan-editor": ["libs/baijan-editor/src/index.ts"],
       "@libs/core-contract/*": ["libs/core-contract/src/*"],
       "@libs/prisma-db/*": ["libs/prisma-db/src/*"]
     }
